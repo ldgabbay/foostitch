@@ -110,10 +110,11 @@ def parse_command_line():
 def main():
     cfg = parse_command_line()
 
+    template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates")
     parts = []
     for i in xrange(len(cfg)):
         script, input = cfg[i]
-        with open("templates/"+script, "rb") as f:
+        with open(os.path.join(template_path, script), "rb") as f:
             parts.append(foostache.Template(unicode(f.read())).render(input))
     body = u"\n".join(parts)
 
