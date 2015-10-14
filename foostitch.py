@@ -25,8 +25,8 @@ class RecipeConfiguration(object):
 
     def __getitem__(self, item):
         if self.inputs[item]:
-            data = copy.deepcopy(self.data)
-            data.update(self.inputs[item])
+            data = copy.deepcopy(self.inputs[item])
+            data.update(self.data)
             return self.scripts[item], data
         return self.scripts[item], self.data
 
