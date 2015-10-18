@@ -117,9 +117,9 @@ def main():
     template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates")
     parts = []
     for i in xrange(len(cfg)):
-        script, input = cfg[i]
-        with open(os.path.join(template_path, script), "rb") as f:
-            parts.append(foostache.Template(unicode(f.read())).render(input))
+        template_fn, context = cfg[i]
+        with open(os.path.join(template_path, template_fn), "rb") as f:
+            parts.append(foostache.Template(unicode(f.read())).render(context))
     body = u"\n".join(parts)
 
     if cfg.output_file:
