@@ -38,13 +38,17 @@ def load_configuration_file(*args):
     filenames = ['./.foostitch', '~/.foostitch', '/etc/foostitch']
     if args:
         filenames = list(args) + filenames
+    body = None
     for filename in filenames:
         try:
-            with open(os.path.expanduser(filename), 'r') as f:
-                return cjson.decode(f.read())
+            with open(os.path.expanduser(filename), 'rb') as f:
+                body = f.read()
         except:
-            pass
-    return {}
+            continue
+    if body:
+        return cjson.decode(body)
+    else:
+        return {}
 
 
 def usage():
