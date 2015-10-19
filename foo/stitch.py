@@ -37,12 +37,12 @@ def load_configuration_file(*args):
     if args:
         filenames = list(args) + filenames
     body = None
-    for filename in filenames:
-        try:
-            with open(os.path.expanduser(filename), 'rb') as f:
-                body = f.read()
-        except:
-            continue
+    for fn in filenames:
+        fn = os.path.expanduser(fn)
+        if os.path.isfile(fn):
+            with open(fn, 'rb') as f:
+                body = f.read().decode("utf_8")
+                break
     if body:
         return cjson.decode(body)
     else:
