@@ -6,7 +6,7 @@ import getopt
 import os
 import sys
 
-import foo.stitch
+import foostitch
 
 
 def usage(*args):
@@ -48,7 +48,7 @@ def parse_command_line(cfg):
 
 
 def main():
-    cfg = foo.stitch.Session()
+    cfg = foostitch.Session()
     cfg, output_file = parse_command_line(cfg)
     body = cfg.render()
     
