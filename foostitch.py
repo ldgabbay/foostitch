@@ -7,7 +7,7 @@ import cjson
 import getopt
 import os
 
-from foo.stitch import RecipeConfiguration, load_configuration_file, parse_recipe, render
+from foo.stitch import RecipeConfiguration, render
 
 
 def usage():
@@ -30,10 +30,11 @@ def parse_command_line():
         usage()
 
     cfg = RecipeConfiguration()
+    output_file = None
 
     for opt, arg in opts:
         if opt in ('-o', '--output-file'):
-            cfg.output_file = arg
+            output_file = arg
         elif opt in ('-c', '--configuration-file'):
             cfg.configuration_file = arg
         else:
@@ -41,29 +42,16 @@ def parse_command_line():
 
     cfg.recipe_name = args[0]
 
-    if cfg.configuration_file:
-        recipes = load_configuration_file(cfg.configuration_file)
-    else:
-        recipes = load_configuration_file()
-
-    if cfg.recipe_name not in recipes:
-        raise ValueError("recipe {} not found".format(cfg.recipe_name))
-
-    context = {}
-    parse_recipe(recipes, cfg.recipe_name, context, cfg.scripts, cfg.inputs)
-
-    assert len(cfg.inputs) == len(cfg.scripts)
-
-    return cfg
+    return cfg, output_file
 
 
 def main():
-    cfg = parse_command_line()
+    cfg, output_file = parse_command_line()
 
     body = render(cfg)
     
-    if cfg.output_file:
-        with open(cfg.output_file, "wb") as f:
+    if output_file:
+        with open(output_file, "wb") as f:
             f.write(body)
     else:
         print body

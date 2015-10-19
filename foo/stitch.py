@@ -15,11 +15,11 @@ TEMPLATE_PATH = [
     os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "templates")
 ]
 
+
 class RecipeConfiguration(object):
     def __init__(self):
         self.scripts = []
         self.inputs = []
-        self.output_file = None
         self.configuration_file = None
         self.recipe_name = None
 
@@ -87,6 +87,23 @@ def parse_recipe(recipes, name, default_context, templates, contexts):
 
 
 def render(cfg):
+    if cfg.configuration_file:
+        recipes = load_configuration_file(cfg.configuration_file)
+    else:
+        recipes = load_configuration_file()
+
+    if cfg.recipe_name not in recipes:
+        raise ValueError("recipe {} not found".format(cfg.recipe_name))
+
+    if "*" in recipes:
+        context = recipes["*"]
+    else:
+        context = {}
+
+    parse_recipe(recipes, cfg.recipe_name, context, cfg.scripts, cfg.inputs)
+
+    assert len(cfg.inputs) == len(cfg.scripts)
+
     parts = []
     for i in xrange(len(cfg)):
         template_fn, context = cfg[i]
