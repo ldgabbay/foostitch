@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 
-import sys
-import cjson
 import getopt
 import os
+import sys
 
 from foo.stitch import RecipeConfiguration, render
 

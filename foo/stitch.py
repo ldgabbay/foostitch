@@ -7,7 +7,6 @@ import sys
 
 import foostache
 
-
 TEMPLATE_PATH = [
     "./.foostitch.templates",
     "~/.foostitch.templates",
