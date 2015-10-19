@@ -13,8 +13,6 @@ from foo.stitch import RecipeConfiguration, load_configuration_file, parse_recip
 def usage():
     print >> sys.stderr, "usage: {0} [option]* [recipe]".format(os.path.basename(sys.argv[0]))
     print >> sys.stderr, "Options and arguments:"
-    print >> sys.stderr, "  -d, --data <arg>               : template input data"
-    print >> sys.stderr, "  -f, --data-file <arg>          : template input data file"
     print >> sys.stderr, "  -o, --output-file <arg>        : filename for output"
     print >> sys.stderr, "  -c, --configuration-file <arg> : filename for configuration"
     print >> sys.stderr, "  <recipe>                       : recipe name"
@@ -23,9 +21,7 @@ def usage():
 
 def parse_command_line():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:f:o:c:", [
-            "data=",
-            "data-file=",
+        opts, args = getopt.getopt(sys.argv[1:], "o:c:", [
             "output-file=",
             "configuration-file="
         ])
@@ -36,12 +32,7 @@ def parse_command_line():
     cfg = RecipeConfiguration()
 
     for opt, arg in opts:
-        if opt in ('-d', '--data'):
-            cfg.data = cjson.decode(arg)
-        elif opt in ('-f', '--data-file'):
-            with open(arg, "rb") as f:
-                cfg.data = cjson.decode(f.read())
-        elif opt in ('-o', '--output-file'):
+        if opt in ('-o', '--output-file'):
             cfg.output_file = arg
         elif opt in ('-c', '--configuration-file'):
             cfg.configuration_file = arg

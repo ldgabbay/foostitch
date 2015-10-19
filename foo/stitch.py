@@ -15,7 +15,6 @@ TEMPLATE_PATH = [
 
 class RecipeConfiguration(object):
     def __init__(self):
-        self.data = {}
         self.scripts = []
         self.inputs = []
         self.output_file = None
@@ -26,12 +25,8 @@ class RecipeConfiguration(object):
         assert len(self.scripts) == len(self.inputs)
         return len(self.scripts)
 
-    def __getitem__(self, item):
-        if self.inputs[item]:
-            data = copy.deepcopy(self.inputs[item])
-            data.update(self.data)
-            return self.scripts[item], data
-        return self.scripts[item], self.data
+    def __getitem__(self, index):
+        return self.scripts[index], self.inputs[index]
 
 
 def load_configuration_file(*args):
