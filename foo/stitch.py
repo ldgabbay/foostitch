@@ -3,6 +3,7 @@
 import copy
 import cjson
 import os.path
+import sys
 
 import foostache
 
@@ -11,7 +12,7 @@ TEMPLATE_PATH = [
     "./.foostitch.templates",
     "~/.foostitch.templates",
     "/etc/foostitch.templates",
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates")
+    os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "templates")
 ]
 
 class RecipeConfiguration(object):
