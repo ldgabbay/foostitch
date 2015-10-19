@@ -96,6 +96,8 @@ class Session(object):
 
         if "*" in recipes:
             context = recipes["*"]
+            if not isinstance(context, dict):
+                raise ValueError("default context must be a dict")
         else:
             context = {}
 
