@@ -6,7 +6,7 @@ import getopt
 import os
 import sys
 
-from foo.stitch import RecipeConfiguration, render
+from foo.stitch import Session
 
 
 def usage():
@@ -28,7 +28,7 @@ def parse_command_line():
         print >> sys.stderr, err
         usage()
 
-    cfg = RecipeConfiguration()
+    cfg = Session()
     output_file = None
 
     for opt, arg in opts:
@@ -47,7 +47,7 @@ def parse_command_line():
 def main():
     cfg, output_file = parse_command_line()
 
-    body = render(cfg)
+    body = cfg.render()
     
     if output_file:
         with open(output_file, "wb") as f:
