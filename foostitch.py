@@ -41,7 +41,10 @@ def parse_command_line():
 
     cfg.recipe_name = args[0]
 
-    recipes = load_configuration_file(cfg.configuration_file)
+    if cfg.configuration_file:
+        recipes = load_configuration_file(cfg.configuration_file)
+    else:
+        recipes = load_configuration_file()
 
     if cfg.recipe_name not in recipes:
         raise ValueError("recipe {} not found".format(cfg.recipe_name))
