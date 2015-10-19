@@ -6,6 +6,13 @@ import os
 import foostache
 
 
+TEMPLATE_PATH = [
+    "./.foostitch.templates",
+    "~/.foostitch.templates",
+    "/etc/foostitch.templates",
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates")
+]
+
 class RecipeConfiguration(object):
     def __init__(self):
         self.data = {}
@@ -86,10 +93,17 @@ def parse_recipe(recipes, name, context, scripts, inputs):
 
 
 def render(cfg):
-    template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates")
     parts = []
     for i in xrange(len(cfg)):
         template_fn, context = cfg[i]
-        with open(os.path.join(template_path, template_fn), "rb") as f:
-            parts.append(foostache.Template(unicode(f.read())).render(context))
+        found = False
+        for p in TEMPLATE_PATH:
+            fn = os.path.join(p, template_fn)
+            if os.path.isfile(fn):
+                with open(fn, "rb") as f:
+                    parts.append(foostache.Template(f.read().decode('utf_8')).render(context))
+                    found = True
+                    break
+        if not found:
+            raise ValueError("template {} not found".format(template_fn))
     return u"\n".join(parts)
