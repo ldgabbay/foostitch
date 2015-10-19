@@ -9,7 +9,9 @@ import sys
 import foo.stitch
 
 
-def usage():
+def usage(*args):
+    if args:
+        print >> sys.stderr, "{0}: {1}".format(os.path.basename(sys.argv[0]), args[0])
     print >> sys.stderr, "usage: {0} [option]* [recipe]".format(os.path.basename(sys.argv[0]))
     print >> sys.stderr, "Options and arguments:"
     print >> sys.stderr, "  -o, --output-file <arg>        : filename for output"
@@ -25,8 +27,12 @@ def parse_command_line(cfg):
             "configuration-file="
         ])
     except getopt.GetoptError as err:
-        print >> sys.stderr, err
-        usage()
+        usage("bad option")
+
+    if len(args) < 1:
+        usage("missing recipe")
+
+    cfg.recipe_name = args[0]
 
     output_file = None
 
@@ -37,8 +43,6 @@ def parse_command_line(cfg):
             cfg.configuration_file = arg
         else:
             assert False
-
-    cfg.recipe_name = args[0]
 
     return cfg, output_file
 
