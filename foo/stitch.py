@@ -48,14 +48,14 @@ def load_configuration_file(*args):
         return {}
 
 
-def parse_recipe(recipes, name, context, scripts, inputs):
+def parse_recipe(recipes, name, default_context, templates, contexts):
     if not isinstance(name, basestring):
         raise TypeError("name must be a basestring")
-    if not isinstance(context, dict):
+    if not isinstance(default_context, dict):
         raise TypeError("context must be a dict")
-    if not isinstance(scripts, list):
+    if not isinstance(templates, list):
         raise TypeError("scripts must be a list")
-    if not isinstance(inputs, list):
+    if not isinstance(contexts, list):
         raise TypeError("inputs must be a list")
 
     if name not in recipes:
@@ -69,19 +69,19 @@ def parse_recipe(recipes, name, context, scripts, inputs):
         item = sequence[i]
         i = i + 1
         if isinstance(item, dict):
-            context.update(item)
+            default_context.update(item)
         elif isinstance(item, basestring):
             if item.startswith("*"):
-                parse_recipe(recipes, item[1:], copy.deepcopy(context), scripts, inputs)
+                parse_recipe(recipes, item[1:], copy.deepcopy(default_context), templates, contexts)
             else:
-                scripts.append(item)
+                templates.append(item)
                 if (i < len(sequence)) and isinstance(sequence[i], dict):
-                    data = copy.deepcopy(context)
+                    data = copy.deepcopy(default_context)
                     data.update(sequence[i])
-                    inputs.append(data)
+                    contexts.append(data)
                     i = i + 1
                 else:
-                    inputs.append(copy.deepcopy(context))
+                    contexts.append(copy.deepcopy(default_context))
         else:
             return ValueError("unexpected item in recipe")
 
