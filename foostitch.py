@@ -6,7 +6,7 @@ import getopt
 import os
 import sys
 
-from foo.stitch import Session
+import foo.stitch
 
 
 def usage():
@@ -18,7 +18,7 @@ def usage():
     sys.exit(1)
 
 
-def parse_command_line():
+def parse_command_line(cfg):
     try:
         opts, args = getopt.getopt(sys.argv[1:], "o:c:", [
             "output-file=",
@@ -28,7 +28,6 @@ def parse_command_line():
         print >> sys.stderr, err
         usage()
 
-    cfg = Session()
     output_file = None
 
     for opt, arg in opts:
@@ -45,8 +44,8 @@ def parse_command_line():
 
 
 def main():
-    cfg, output_file = parse_command_line()
-
+    cfg = foo.stitch.Session()
+    cfg, output_file = parse_command_line(cfg)
     body = cfg.render()
     
     if output_file:
