@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import copy
-import os
+import cjson
+import os.path
 
 import foostache
 
@@ -30,9 +31,6 @@ class RecipeConfiguration(object):
 
 
 def load_configuration_file(*args):
-    import cjson
-    import os
-
     filenames = ['./.foostitch', '~/.foostitch', '/etc/foostitch']
     if args:
         filenames = list(args) + filenames
