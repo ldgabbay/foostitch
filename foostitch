@@ -48,15 +48,18 @@ def parse_command_line(cfg):
 
 
 def main():
-    cfg = foostitch.Session()
-    cfg, output_file = parse_command_line(cfg)
-    body = cfg.render()
-    
-    if output_file:
-        with open(output_file, "wb") as f:
-            f.write(body)
-    else:
-        print body
+    try:
+        cfg = foostitch.Session()
+        cfg, output_file = parse_command_line(cfg)
+        body = cfg.render()
+        
+        if output_file:
+            with open(output_file, "wb") as f:
+                f.write(body)
+        else:
+            print body
+    except Exception as e:
+        usage(e)
 
 
 if __name__ == "__main__":
