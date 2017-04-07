@@ -27,7 +27,7 @@ def parse_command_line(cfg):
             "configuration-file="
         ])
     except getopt.GetoptError as err:
-        usage("bad option")
+        usage(err)
 
     if len(args) < 1:
         usage("missing recipe")
