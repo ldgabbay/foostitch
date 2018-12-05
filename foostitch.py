@@ -123,7 +123,7 @@ class Session(object):
             template, context = self[i]
             found = False
             for p in self.template_directories + _TEMPLATE_PATH:
-                fn = os.path.join(p, template)
+                fn = os.path.expanduser(os.path.join(p, template))
                 if os.path.isfile(fn):
                     with open(fn, "rb") as f:
                         parts.append(foostache.Template(f.read().decode('utf_8')).render(context))
