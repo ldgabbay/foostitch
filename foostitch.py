@@ -4,7 +4,7 @@ import copy
 import os.path
 import sys
 
-import cjson
+import ujson
 import foostache
 
 
@@ -20,7 +20,7 @@ def _load_configuration_file(*args):
                 body = f.read().decode("utf_8")
                 break
     if body:
-        return cjson.decode(body)
+        return ujson.loads(body)
     else:
         return {}
 
