@@ -69,9 +69,9 @@ def _parse_recipe(recipes, name, default_context, templates, contexts):
 
 
 _TEMPLATE_PATH = [
-    "./.foostitch.templates",
-    "~/.foostitch.templates",
-    "/etc/foostitch.templates",
+    "./.foostitch-templates",
+    "~/.foostitch-templates",
+    "/etc/foostitch-templates",
     os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "templates")
 ]
 
