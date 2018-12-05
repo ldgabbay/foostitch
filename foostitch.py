@@ -12,17 +12,22 @@ def _load_configuration_file(*args):
     filenames = ['./.foostitch', '~/.foostitch', '/etc/foostitch']
     if args:
         filenames = list(args) + filenames
-    body = None
-    for fn in filenames:
-        fn = os.path.expanduser(fn)
-        if os.path.isfile(fn):
-            with open(fn, 'rb') as f:
-                body = f.read().decode("utf_8")
-                break
-    if body:
-        return ujson.loads(body)
-    else:
-        return {}
+    result = {}
+    for filename in reversed(filenames):
+        try:
+            body = None
+            with open(os.path.expanduser(filename), 'rb') as f:
+                body = f.read()
+            try:
+                body = ujson.loads(body)
+            except:
+                print >> sys.stderr, "error parsing {}".format(filename)
+                continue
+            for k, v in body.iteritems():
+                result[k] = v
+        except:
+            pass
+    return result
 
 
 def _parse_recipe(recipes, name, default_context, templates, contexts):
