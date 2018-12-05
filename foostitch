@@ -16,15 +16,17 @@ def usage(*args):
     print >> sys.stderr, "Options and arguments:"
     print >> sys.stderr, "  -o, --output-file <arg>        : filename for output"
     print >> sys.stderr, "  -c, --configuration-file <arg> : filename for configuration"
+    print >> sys.stderr, "  -t, --template-directory       : directory with templates"
     print >> sys.stderr, "  <recipe>                       : recipe name"
     sys.exit(1)
 
 
 def parse_command_line(cfg):
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "o:c:", [
+        opts, args = getopt.getopt(sys.argv[1:], "o:c:t:", [
             "output-file=",
-            "configuration-file="
+            "configuration-file=",
+            "template-directory="
         ])
     except getopt.GetoptError as err:
         usage(err)
@@ -41,6 +43,8 @@ def parse_command_line(cfg):
             output_file = arg
         elif opt in ('-c', '--configuration-file'):
             cfg.configuration_files.append(arg)
+        elif opt in ('-t', '--template-directory'):
+            cfg.template_directories.append(arg)
         else:
             assert False
 

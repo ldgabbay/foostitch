@@ -80,6 +80,7 @@ class Session(object):
     def __init__(self):
         self._templates = []
         self._contexts = []
+        self.template_directories = []
         self.configuration_files = []
         self.recipe_name = None
 
@@ -111,7 +112,7 @@ class Session(object):
         for i in xrange(len(self)):
             template, context = self[i]
             found = False
-            for p in _TEMPLATE_PATH:
+            for p in self.template_directories + _TEMPLATE_PATH:
                 fn = os.path.join(p, template)
                 if os.path.isfile(fn):
                     with open(fn, "rb") as f:
