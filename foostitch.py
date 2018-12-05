@@ -80,7 +80,7 @@ class Session(object):
     def __init__(self):
         self._templates = []
         self._contexts = []
-        self.configuration_file = None
+        self.configuration_files = []
         self.recipe_name = None
 
     def __len__(self):
@@ -91,10 +91,7 @@ class Session(object):
         return self._templates[index], self._contexts[index]
 
     def render(self):
-        if self.configuration_file:
-            recipes = _load_configuration_file(self.configuration_file)
-        else:
-            recipes = _load_configuration_file()
+        recipes = _load_configuration_file(*self.configuration_files)
 
         if self.recipe_name not in recipes:
             raise ValueError("recipe {} not found".format(self.recipe_name))

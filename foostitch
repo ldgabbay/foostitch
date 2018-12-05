@@ -40,7 +40,7 @@ def parse_command_line(cfg):
         if opt in ('-o', '--output-file'):
             output_file = arg
         elif opt in ('-c', '--configuration-file'):
-            cfg.configuration_file = arg
+            cfg.configuration_files.append(arg)
         else:
             assert False
 
