@@ -10,16 +10,16 @@ class Cookbook(object):
     def __init__(self):
         self._recipes = {}
 
-    def __contains__(self, item):
+    def __contains__(self, item: str):
         return item in self._recipes
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> list:
         return self._recipes[key]
 
-    def add_recipe(self, name:str, recipe:dict):
+    def add_recipe(self, name: str, recipe: list):
         self._recipes[name] = recipe
 
-    def add_cookbook(self, cookbook:dict):
+    def add_cookbook(self, cookbook: dict):
         for name, recipe in cookbook.items():
             self.add_recipe(name, recipe)
 
@@ -59,7 +59,25 @@ def _load_configuration_file(*args) -> Cookbook:
     return cookbook
 
 
-def _parse_recipe(cookbook, name, base_context, templates, contexts):
+class Step(object):
+    def __init__(self, template: str, context: dict):
+        self.template = template
+        self.context = context
+
+
+class Recipe(object):
+
+    def __init__(self):
+        self.steps = []
+
+    def add_step(self, template: str, context: dict):
+        self.steps.append(Step(template, context))
+
+    def add_recipe(self, recipe: 'Recipe'):
+        self.steps.extend(recipe.steps)
+
+
+def _parse_recipe(cookbook, name, base_context) -> Recipe:
     """Assemble templates and contexts for a recipe.
     
     Accumulates result into templates and contexts arguments.
@@ -68,8 +86,6 @@ def _parse_recipe(cookbook, name, base_context, templates, contexts):
         cookbook {dict} -- recipe map
         name {str} -- recipe name
         base_context {dict} -- base context
-        templates {list} -- list of templates
-        contexts {list} -- list of contexts
     """
     if not isinstance(cookbook, Cookbook):
         raise TypeError("cookbook must be a Cookbook")
@@ -77,10 +93,8 @@ def _parse_recipe(cookbook, name, base_context, templates, contexts):
         raise TypeError("name must be a str")
     if not isinstance(base_context, dict):
         raise TypeError("base_context must be a dict")
-    if not isinstance(templates, list):
-        raise TypeError("templates must be a list")
-    if not isinstance(contexts, list):
-        raise TypeError("contexts must be a list")
+
+    recipe = Recipe()
 
     if name not in cookbook:
         raise ValueError("recipe {} not found".format(name))
@@ -109,13 +123,14 @@ def _parse_recipe(cookbook, name, base_context, templates, contexts):
                 item_context = recipe_base_context
             if item.startswith("*"):
                 # include this recipe
-                _parse_recipe(cookbook, item[1:], item_context, templates, contexts)
+                recipe.add_recipe(_parse_recipe(cookbook, item[1:], item_context))
             else:
                 # include this template with optional context
-                templates.append(item)
-                contexts.append(item_context)
+                recipe.add_step(item, item_context)
         else:
             raise ValueError("unexpected item in recipe")
+
+    return recipe
 
 
 _TEMPLATE_PATH = [
@@ -127,18 +142,9 @@ _TEMPLATE_PATH = [
 
 class Session(object):
     def __init__(self):
-        self._templates = []
-        self._contexts = []
         self.template_directories = []
         self.configuration_files = []
         self.recipe_name = None
-
-    def __len__(self):
-        assert len(self._templates) == len(self._contexts)
-        return len(self._templates)
-
-    def __getitem__(self, index):
-        return self._templates[index], self._contexts[index]
 
     def render(self):
         cookbook = _load_configuration_file(*self.configuration_files)
@@ -153,21 +159,18 @@ class Session(object):
         else:
             base_context = {}
 
-        _parse_recipe(cookbook, self.recipe_name, base_context, self._templates, self._contexts)
-
-        assert len(self._contexts) == len(self._templates)
+        recipe = _parse_recipe(cookbook, self.recipe_name, base_context)
 
         parts = []
-        for i in range(len(self)):
-            template, context = self[i]
+        for step in recipe.steps:
             found = False
             for p in self.template_directories + _TEMPLATE_PATH:
-                fn = os.path.expanduser(os.path.join(p, template))
+                fn = os.path.expanduser(os.path.join(p, step.template))
                 if os.path.isfile(fn):
-                    with open(fn, "rb") as f:
-                        parts.append(foostache.Template(f.read().decode("utf_8")).render(context))
+                    with open(fn, "r") as f:
+                        parts.append(foostache.Template(f.read()).render(step.context))
                         found = True
                         break
             if not found:
-                raise ValueError("template {} not found".format(template))
+                raise ValueError("template {} not found".format(step.template))
         return "\n".join(parts)
