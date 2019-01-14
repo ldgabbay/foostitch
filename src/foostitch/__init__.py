@@ -49,8 +49,8 @@ class Cookbook(object):
     def add_recipe(self, name: str, instructions: list, base_context: Optional[dict] = None):
         if not isinstance(name, str):
             raise TypeError()
-        if name in self._recipes:
-            raise ValueError(f"recipe {repr(name)} already defined")
+        # if name in self._recipes:
+        #     print(f"warning: recipe {repr(name)} already defined")
         self._recipes[name] = Recipe.parse(instructions, base_context)
 
     def add_cookbook(self, cookbook: dict):
