@@ -29,6 +29,13 @@ class Cookbook(object):
         for name, recipe in cookbook.items():
             self.add_recipe(name, recipe)
 
+    def load(self, fn: str):
+        fn = os.path.expanduser(fn)
+        if not os.path.isfile(fn):
+            return
+        with open(fn, "rb") as f:
+            self.add_cookbook(ujson.decode(f.read()))
+
 
 def _load_configuration_file(*args) -> Cookbook:
     """Loads all configuration files into single recipe map.
@@ -37,7 +44,7 @@ def _load_configuration_file(*args) -> Cookbook:
     """
 
     cookbook = Cookbook()
-    for fn in reversed([fn for fn in (*args, "./.foostitch", "~/.foostitch", "/etc/foostitch")]):
+    for fn in reversed([*args, "./.foostitch", "~/.foostitch", "/etc/foostitch"]):
         if not isinstance(fn, str):
             raise TypeError("fn must be a str")
 
@@ -45,22 +52,11 @@ def _load_configuration_file(*args) -> Cookbook:
         if not os.path.isfile(fn):
             continue
 
-        body = None
-
         try:
-            with open(fn, "rb") as f:
-                body = f.read()
+            cookbook.load(fn)
         except Exception as e:
             print("{0}: {1}".format(fn, str(e)), file=sys.stderr)
             continue
-
-        try:
-            body = ujson.decode(body)
-        except Exception as e:
-            print("{0}: {1}".format(fn, str(e)), file=sys.stderr)
-            continue
-
-        cookbook.add_cookbook(body)
 
     return cookbook
 
