@@ -6,6 +6,12 @@ import foostache
 import ujson
 
 
+def apply_context(base_context: dict, overlay_context: dict) -> dict:
+    new_context = copy.deepcopy(base_context)
+    new_context.update(overlay_context)
+    return new_context
+
+
 class Cookbook(object):
     def __init__(self):
         self._recipes = {}
@@ -104,8 +110,7 @@ def _parse_recipe(cookbook, name, base_context) -> Recipe:
 
     # if the first entry is a dict, overlay the base context for the recipe
     if (len(sequence) != 0) and isinstance(sequence[0], dict):
-        recipe_base_context = copy.deepcopy(base_context)
-        recipe_base_context.update(sequence[0])
+        recipe_base_context = apply_context(base_context, sequence[0])
         i = 1
     else:
         recipe_base_context = base_context
@@ -116,8 +121,7 @@ def _parse_recipe(cookbook, name, base_context) -> Recipe:
         i = i + 1
         if isinstance(item, str):
             if (i != len(sequence)) and isinstance(sequence[i], dict):
-                item_context = copy.deepcopy(recipe_base_context)
-                item_context.update(sequence[i])
+                item_context = apply_context(recipe_base_context, sequence[i])
                 i = i + 1
             else:
                 item_context = recipe_base_context
