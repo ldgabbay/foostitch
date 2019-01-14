@@ -1,27 +1,25 @@
-# coding: utf_8
-
 import copy
 import os.path
 import sys
 
-import ujson
 import foostache
+import ujson
 
 
 def _load_configuration_file(*args):
-    filenames = ['./.foostitch', '~/.foostitch', '/etc/foostitch']
+    filenames = ["./.foostitch", "~/.foostitch", "/etc/foostitch"]
     if args:
         filenames = list(args) + filenames
     result = {}
     for filename in reversed(filenames):
         try:
             body = None
-            with open(os.path.expanduser(filename), 'rb') as f:
+            with open(os.path.expanduser(filename), "rb") as f:
                 body = f.read()
             try:
-                body = ujson.loads(body)
+                body = ujson.decode(body)
             except:
-                print >> sys.stderr, "error parsing {}".format(filename)
+                print("error parsing {}".format(filename), file=sys.stderr)
                 continue
             for k, v in body.iteritems():
                 result[k] = v
@@ -119,16 +117,16 @@ class Session(object):
         assert len(self._contexts) == len(self._templates)
 
         parts = []
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             template, context = self[i]
             found = False
             for p in self.template_directories + _TEMPLATE_PATH:
                 fn = os.path.expanduser(os.path.join(p, template))
                 if os.path.isfile(fn):
                     with open(fn, "rb") as f:
-                        parts.append(foostache.Template(f.read().decode('utf_8')).render(context))
+                        parts.append(foostache.Template(f.read().decode("utf_8")).render(context))
                         found = True
                         break
             if not found:
                 raise ValueError("template {} not found".format(template))
-        return u"\n".join(parts)
+        return "\n".join(parts)
