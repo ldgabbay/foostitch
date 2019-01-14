@@ -79,7 +79,7 @@ class Recipe(object):
     def add_step(self, template: str, context: dict):
         self.steps.append(Step(template, context))
 
-    def add_recipe(self, recipe: 'Recipe'):
+    def add_subrecipe(self, recipe: 'Recipe'):
         self.steps.extend(recipe.steps)
 
 
@@ -127,7 +127,7 @@ def _parse_recipe(cookbook, name, base_context) -> Recipe:
                 item_context = recipe_base_context
             if item.startswith("*"):
                 # include this recipe
-                recipe.add_recipe(_parse_recipe(cookbook, item[1:], item_context))
+                recipe.add_subrecipe(_parse_recipe(cookbook, item[1:], item_context))
             else:
                 # include this template with optional context
                 recipe.add_step(item, item_context)
