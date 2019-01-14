@@ -6,10 +6,10 @@ import foostache
 import ujson
 
 
-def apply_context(base_context: dict, overlay_context: dict) -> dict:
-    new_context = copy.deepcopy(base_context)
-    new_context.update(overlay_context)
-    return new_context
+def apply_context(base: dict, overlay: dict) -> dict:
+    new = copy.deepcopy(base)
+    new.update(overlay)
+    return new
 
 
 class Cookbook(object):
