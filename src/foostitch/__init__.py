@@ -7,32 +7,56 @@ import ujson
 
 
 def _load_configuration_file(*args):
-    filenames = ["./.foostitch", "~/.foostitch", "/etc/foostitch"]
-    if args:
-        filenames = list(args) + filenames
+    """Loads all configuration files into single recipe map.
+    
+    Earlier files take precedent over later ones.
+    """
     result = {}
-    for filename in reversed(filenames):
+    for fn in reversed([fn for fn in (*args, "./.foostitch", "~/.foostitch", "/etc/foostitch")]):
+        if not isinstance(fn, str):
+            raise TypeError("fn must be a str")
+
+        fn = os.path.expanduser(fn)
+        if not os.path.isfile(fn):
+            continue
+
+        body = None
+
         try:
-            body = None
-            with open(os.path.expanduser(filename), "rb") as f:
+            with open(fn, "rb") as f:
                 body = f.read()
-            try:
-                body = ujson.decode(body)
-            except:
-                print("error parsing {}".format(filename), file=sys.stderr)
-                continue
-            for k, v in body.iteritems():
-                result[k] = v
-        except:
-            pass
+        except Exception as e:
+            print("{0}: {1}".format(fn, str(e)), file=sys.stderr)
+            continue
+
+        try:
+            body = ujson.decode(body)
+        except Exception as e:
+            print("{0}: {1}".format(fn, str(e)), file=sys.stderr)
+            continue
+
+        for k, v in body.items():
+            result[k] = v
+
     return result
 
 
 def _parse_recipe(recipes, name, base_context, templates, contexts):
+    """Assemble templates and contexts for a recipe.
+    
+    Accumulates result into templates and contexts arguments.
+    
+    Arguments:
+        recipes {dict} -- recipe map
+        name {str} -- recipe name
+        base_context {dict} -- base context
+        templates {list} -- list of templates
+        contexts {list} -- list of contexts
+    """
     if not isinstance(recipes, dict):
         raise TypeError("recipes must be a dict")
-    if not isinstance(name, basestring):
-        raise TypeError("name must be a basestring")
+    if not isinstance(name, str):
+        raise TypeError("name must be a str")
     if not isinstance(base_context, dict):
         raise TypeError("base_context must be a dict")
     if not isinstance(templates, list):
@@ -58,7 +82,7 @@ def _parse_recipe(recipes, name, base_context, templates, contexts):
     while i != len(sequence):
         item = sequence[i]
         i = i + 1
-        if isinstance(item, basestring):
+        if isinstance(item, str):
             if (i != len(sequence)) and isinstance(sequence[i], dict):
                 item_context = copy.deepcopy(recipe_base_context)
                 item_context.update(sequence[i])
