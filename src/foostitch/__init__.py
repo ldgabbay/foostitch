@@ -1,3 +1,5 @@
+__version__ = "1.0.0.dev0"
+
 import copy
 import os.path
 import sys
