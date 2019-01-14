@@ -74,6 +74,8 @@ def main(args=None):
         traceback.print_exc(file=sys.stderr)
         return os.EX_SOFTWARE
 
+    return os.EX_OK
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
