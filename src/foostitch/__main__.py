@@ -1,4 +1,5 @@
 import getopt
+import io
 import os
 import sys
 
@@ -55,11 +56,15 @@ def main(args=None):
             else:
                 assert False
 
+        with io.BytesIO() as f:
+            cfg.render(recipe_name, f)
+            b = f.getvalue()
+
         if output_file is not None:
             with open(output_file, "wb") as f:
-                cfg.render(recipe_name, f)
+                f.write(b)
         else:
-            cfg.render(recipe_name, sys.stdout.buffer)
+            sys.stdout.buffer.write(b)
 
     except Exception as e:
         print_error(str(e))
