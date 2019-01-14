@@ -137,19 +137,18 @@ def _parse_recipe(cookbook, name, base_context) -> Recipe:
     return recipe
 
 
-_TEMPLATE_PATH = [
-    "./.foostitch-templates",
-    "~/.foostitch-templates",
-    "/etc/foostitch-templates",
-]
-
-
 class TemplateRepository(object):
+    _PATH = [
+        "./.foostitch-templates",
+        "~/.foostitch-templates",
+        "/etc/foostitch-templates",
+    ]
+
     def __init__(self):
         self.path = []
 
     def load(self, relative_path: str) -> 'foostache.Template':
-        for p in self.path + _TEMPLATE_PATH:
+        for p in self.path + TemplateRepository._PATH:
             fn = os.path.expanduser(os.path.join(p, relative_path))
             if os.path.isfile(fn):
                 with open(fn, "r") as f:
