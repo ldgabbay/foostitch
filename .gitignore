@@ -1,2 +1,6 @@
+__pycache__/
 *.pyc
-.foostitch
+
+build/
+dist/
+src/foostitch.egg-info/
