@@ -80,7 +80,6 @@ _TEMPLATE_PATH = [
     "./.foostitch-templates",
     "~/.foostitch-templates",
     "/etc/foostitch-templates",
-    os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "templates")
 ]
 
 
