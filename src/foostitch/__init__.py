@@ -1,6 +1,7 @@
 __version__ = "1.0.0.dev1"
 
 import copy
+import io
 import os.path
 import sys
 from typing import Optional
@@ -164,7 +165,9 @@ class Session(object):
             else:
                 userdata.add(self.template_repo.load(step.template).render(step_context))
 
-    def render(self, recipe_name: str, fileobj, context: Optional[dict] = None):
+    def render(self, recipe_name: str, context: Optional[dict] = None) -> bytes:
         userdata = mkciud.UserData()
         self._render(recipe_name, userdata, context)
-        userdata.export(fileobj)
+        with io.BytesIO() as f:
+            userdata.export(f)
+            return f.getvalue()

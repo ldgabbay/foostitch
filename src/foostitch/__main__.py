@@ -61,9 +61,7 @@ def main(args=None):
         for fn in reversed(configuration_files):
             cfg.cookbook.load_cookbook(fn)
 
-        with io.BytesIO() as f:
-            cfg.render(recipe_name, f)
-            b = f.getvalue()
+        b = cfg.render(recipe_name)
 
         if output_file is not None:
             with open(output_file, "wb") as f:
