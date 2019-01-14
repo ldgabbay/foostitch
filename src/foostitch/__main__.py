@@ -13,6 +13,7 @@ def print_error(message):
 
 def print_usage():
     print("usage: {0} [option]* [recipe]".format("foostitch"), file=sys.stderr)
+    print("    -r                                 print known recipes",         file=sys.stderr)
     print("    -o, --output-file arg              filename for output",         file=sys.stderr)
     print("    -c, --configuration-file arg       filename for configuration",  file=sys.stderr)
     print("    -t, --template-directory           directory with templates",    file=sys.stderr)
@@ -29,7 +30,7 @@ def main(args=None):
         cfg = foostitch.Session()
 
         try:
-            opts, args = getopt.getopt(args[1:], "o:c:t:", [
+            opts, args = getopt.getopt(args[1:], "ro:c:t:", [
                 "output-file=",
                 "configuration-file=",
                 "template-directory=",
@@ -39,17 +40,14 @@ def main(args=None):
             print_usage()
             return os.EX_USAGE
 
-        if len(args) < 1:
-            print_usage()
-            return os.EX_USAGE
-
-        recipe_name = args[0]
-
+        show_recipes = False
         output_file = None
         configuration_files = []
 
         for opt, arg in opts:
-            if opt in ("-o", "--output-file"):
+            if opt in ("-r"):
+                show_recipes = True
+            elif opt in ("-o", "--output-file"):
                 output_file = arg
             elif opt in ("-c", "--configuration-file"):
                 configuration_files.append(arg)
@@ -60,6 +58,17 @@ def main(args=None):
 
         for fn in reversed(configuration_files):
             cfg.cookbook.load_cookbook(fn)
+
+        if show_recipes:
+            for name in cfg.cookbook.known_recipes:
+                print(name)
+            return os.EX_OK
+
+        if len(args) < 1:
+            print_usage()
+            return os.EX_USAGE
+
+        recipe_name = args[0]
 
         b = cfg.render(recipe_name)
 

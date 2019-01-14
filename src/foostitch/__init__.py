@@ -47,6 +47,10 @@ class Cookbook(object):
     def __getitem__(self, key: str) -> list:
         return self._recipes[key]
 
+    @property
+    def known_recipes(self):
+        return sorted(self._recipes.keys())
+
     def add_recipe(self, name: str, instructions: list, base_context: Optional[dict] = None):
         if not isinstance(name, str):
             raise TypeError()
