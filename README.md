@@ -45,16 +45,20 @@ usage: foostitch [option]* [recipe]
 ## Configuration File
 
 ```text
-{
+CONFIG_FILE: {
+    "*": CONTEXT
     RECIPE_NAME: RECIPE
 }
+
+RECIPE: [ CONTEXT?, (STEP, CONTEXT?)* ]
+
+STEP:
+    "*RECIPE_NAME"
+    "TEMPLATE_FILENAME"
 ```
 
-## Recipe
+In a configuration file, the `"*"` context is the base context for everything contained in the file. (`[cfg]`)
 
-```text
-{
-    CONTEXT?,
-    FILENAME or *RECIPE_NAME, CONTEXT?,
-}
-```
+In a recipe, if there is an initial context, it is applied to the file context to become the recipe context. (`[recipe, cfg]`)
+
+In a step, if there is a context, it is applied to the recipe context to become the step context.  (`[tmpl, recipe, cfg]`)  If the step is an embedded recipe, the step context is applied to each step in the embedded recipe.
