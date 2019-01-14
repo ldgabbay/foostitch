@@ -144,9 +144,22 @@ _TEMPLATE_PATH = [
 ]
 
 
+class TemplateRepository(object):
+    def __init__(self):
+        self.path = []
+
+    def load(self, relative_path: str) -> 'foostache.Template':
+        for p in self.path + _TEMPLATE_PATH:
+            fn = os.path.expanduser(os.path.join(p, relative_path))
+            if os.path.isfile(fn):
+                with open(fn, "r") as f:
+                    return foostache.Template(f.read())
+        raise FileNotFoundError("template not found: {}".format(relative_path))
+
+
 class Session(object):
     def __init__(self):
-        self.template_directories = []
+        self.template_repo = TemplateRepository()
         self.configuration_files = []
         self.recipe_name = None
 
@@ -167,14 +180,5 @@ class Session(object):
 
         parts = []
         for step in recipe.steps:
-            found = False
-            for p in self.template_directories + _TEMPLATE_PATH:
-                fn = os.path.expanduser(os.path.join(p, step.template))
-                if os.path.isfile(fn):
-                    with open(fn, "r") as f:
-                        parts.append(foostache.Template(f.read()).render(step.context))
-                        found = True
-                        break
-            if not found:
-                raise ValueError("template {} not found".format(step.template))
+            parts.append(self.template_repo.load(step.template).render(step.context))
         return "\n".join(parts)

@@ -51,7 +51,7 @@ def main(args=None):
             elif opt in ("-c", "--configuration-file"):
                 cfg.configuration_files.append(arg)
             elif opt in ("-t", "--template-directory"):
-                cfg.template_directories.append(arg)
+                cfg.template_repo.path.append(arg)
             else:
                 assert False
 
