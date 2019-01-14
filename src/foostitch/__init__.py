@@ -73,7 +73,7 @@ def _parse_recipe(recipes, name, base_context, templates, contexts):
                 templates.append(item)
                 contexts.append(item_context)
         else:
-            return ValueError("unexpected item in recipe")
+            raise ValueError("unexpected item in recipe")
 
 
 _TEMPLATE_PATH = [
