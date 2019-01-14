@@ -2,13 +2,14 @@
 
 ## Command-Line Usage
 
-    usage: foostitch [option]* [recipe]
-    Options and arguments:
-      -o, --output-file <arg>        : filename for output
-      -c, --configuration-file <arg> : filename for configuration
-      -t, --template-directory       : directory with templates
-      <recipe>                       : recipe name
+```text
+usage: foostitch [option]* [recipe]
+    -o, --output-file arg              filename for output
+    -c, --configuration-file arg       filename for configuration
+    -t, --template-directory           directory with templates
 
+    recipe                             recipe name
+```
 
 ## Configuration (aka Recipe) File Format
 
@@ -38,7 +39,6 @@
     * `./.foostitch-templates`
     * `~/.foostitch-templates`
     * `/etc/foostitch-templates`
-    * `$FOOSTITCH_DIR/templates`
 
 
 
