@@ -41,7 +41,7 @@ def main(args=None):
             print_usage()
             return os.EX_USAGE
 
-        cfg.recipe_name = args[0]
+        recipe_name = args[0]
 
         output_file = None
 
@@ -55,13 +55,11 @@ def main(args=None):
             else:
                 assert False
 
-        body = cfg.render()
-
-        if output_file:
+        if output_file is not None:
             with open(output_file, "wb") as f:
-                f.write(body)
+                cfg.render(recipe_name, f)
         else:
-            print(body)
+            cfg.render(recipe_name, sys.stdout.buffer)
 
     except Exception as e:
         print_error(str(e))

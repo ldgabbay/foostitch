@@ -3,6 +3,7 @@ import os.path
 import sys
 
 import foostache
+import mkciud
 import ujson
 
 
@@ -156,13 +157,12 @@ class Session(object):
     def __init__(self):
         self.template_repo = TemplateRepository()
         self.configuration_files = []
-        self.recipe_name = None
 
-    def render(self):
+    def render(self, recipe_name: str, fileobj):
         cookbook = _load_configuration_file(*self.configuration_files)
 
-        if self.recipe_name not in cookbook:
-            raise ValueError("recipe {} not found".format(self.recipe_name))
+        if recipe_name not in cookbook:
+            raise ValueError("recipe {} not found".format(recipe_name))
 
         if "*" in cookbook:
             base_context = cookbook["*"]
@@ -171,9 +171,12 @@ class Session(object):
         else:
             base_context = {}
 
-        recipe = _parse_recipe(cookbook, self.recipe_name, base_context)
+        recipe = _parse_recipe(cookbook, recipe_name, base_context)
 
-        parts = []
+        userdata = mkciud.UserData()
         for step in recipe.steps:
-            parts.append(self.template_repo.load(step.template).render(step.context))
-        return "\n".join(parts)
+            try:
+                userdata.add(self.template_repo.load(step.template).render(step.context))
+            except RuntimeError as e:
+                raise RuntimeError("{}: {}".format(step.template, str(e)))
+        userdata.export(fileobj)
