@@ -39,3 +39,22 @@
     * `~/.foostitch-templates`
     * `/etc/foostitch-templates`
     * `$FOOSTITCH_DIR/templates`
+
+
+
+## Configuration File
+
+```text
+{
+    RECIPE_NAME: RECIPE
+}
+```
+
+## Recipe
+
+```text
+{
+    CONTEXT?,
+    FILENAME or *RECIPE_NAME, CONTEXT?,
+}
+```
