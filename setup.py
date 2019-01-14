@@ -35,8 +35,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3 :: Only",
@@ -54,5 +52,5 @@ setup(
         "ujson~=1.35",
         "foostache~=1.2",
     ],
-    python_requires=">=3.4, <4",
+    python_requires=">=3.6, <4",
 )
