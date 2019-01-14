@@ -6,12 +6,31 @@ import foostache
 import ujson
 
 
-def _load_configuration_file(*args):
+class Cookbook(object):
+    def __init__(self):
+        self._recipes = {}
+
+    def __contains__(self, item):
+        return item in self._recipes
+
+    def __getitem__(self, key):
+        return self._recipes[key]
+
+    def add_recipe(self, name:str, recipe:dict):
+        self._recipes[name] = recipe
+
+    def add_cookbook(self, cookbook:dict):
+        for name, recipe in cookbook.items():
+            self.add_recipe(name, recipe)
+
+
+def _load_configuration_file(*args) -> Cookbook:
     """Loads all configuration files into single recipe map.
     
     Earlier files take precedent over later ones.
     """
-    result = {}
+
+    cookbook = Cookbook()
     for fn in reversed([fn for fn in (*args, "./.foostitch", "~/.foostitch", "/etc/foostitch")]):
         if not isinstance(fn, str):
             raise TypeError("fn must be a str")
@@ -35,26 +54,25 @@ def _load_configuration_file(*args):
             print("{0}: {1}".format(fn, str(e)), file=sys.stderr)
             continue
 
-        for k, v in body.items():
-            result[k] = v
+        cookbook.add_cookbook(body)
 
-    return result
+    return cookbook
 
 
-def _parse_recipe(recipes, name, base_context, templates, contexts):
+def _parse_recipe(cookbook, name, base_context, templates, contexts):
     """Assemble templates and contexts for a recipe.
     
     Accumulates result into templates and contexts arguments.
     
     Arguments:
-        recipes {dict} -- recipe map
+        cookbook {dict} -- recipe map
         name {str} -- recipe name
         base_context {dict} -- base context
         templates {list} -- list of templates
         contexts {list} -- list of contexts
     """
-    if not isinstance(recipes, dict):
-        raise TypeError("recipes must be a dict")
+    if not isinstance(cookbook, Cookbook):
+        raise TypeError("cookbook must be a Cookbook")
     if not isinstance(name, str):
         raise TypeError("name must be a str")
     if not isinstance(base_context, dict):
@@ -64,9 +82,9 @@ def _parse_recipe(recipes, name, base_context, templates, contexts):
     if not isinstance(contexts, list):
         raise TypeError("contexts must be a list")
 
-    if name not in recipes:
+    if name not in cookbook:
         raise ValueError("recipe {} not found".format(name))
-    sequence = recipes[name]
+    sequence = cookbook[name]
     if not isinstance(sequence, list):
         raise TypeError("recipe {} not a list".format(name))
 
@@ -91,7 +109,7 @@ def _parse_recipe(recipes, name, base_context, templates, contexts):
                 item_context = recipe_base_context
             if item.startswith("*"):
                 # include this recipe
-                _parse_recipe(recipes, item[1:], item_context, templates, contexts)
+                _parse_recipe(cookbook, item[1:], item_context, templates, contexts)
             else:
                 # include this template with optional context
                 templates.append(item)
@@ -123,19 +141,19 @@ class Session(object):
         return self._templates[index], self._contexts[index]
 
     def render(self):
-        recipes = _load_configuration_file(*self.configuration_files)
+        cookbook = _load_configuration_file(*self.configuration_files)
 
-        if self.recipe_name not in recipes:
+        if self.recipe_name not in cookbook:
             raise ValueError("recipe {} not found".format(self.recipe_name))
 
-        if "*" in recipes:
-            base_context = recipes["*"]
+        if "*" in cookbook:
+            base_context = cookbook["*"]
             if not isinstance(base_context, dict):
                 raise ValueError("default context must be a dict")
         else:
             base_context = {}
 
-        _parse_recipe(recipes, self.recipe_name, base_context, self._templates, self._contexts)
+        _parse_recipe(cookbook, self.recipe_name, base_context, self._templates, self._contexts)
 
         assert len(self._contexts) == len(self._templates)
 
