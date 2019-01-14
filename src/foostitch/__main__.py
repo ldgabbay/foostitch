@@ -2,6 +2,7 @@ import getopt
 import io
 import os
 import sys
+import traceback
 
 import foostitch
 
@@ -45,16 +46,20 @@ def main(args=None):
         recipe_name = args[0]
 
         output_file = None
+        configuration_files = []
 
         for opt, arg in opts:
             if opt in ("-o", "--output-file"):
                 output_file = arg
             elif opt in ("-c", "--configuration-file"):
-                cfg.configuration_files.append(arg)
+                configuration_files.append(arg)
             elif opt in ("-t", "--template-directory"):
-                cfg.template_repo.path.append(arg)
+                cfg.template_repo.search_path.append(arg)
             else:
                 assert False
+
+        for fn in reversed(configuration_files):
+            cfg.cookbook.load_cookbook(fn)
 
         with io.BytesIO() as f:
             cfg.render(recipe_name, f)
@@ -68,6 +73,7 @@ def main(args=None):
 
     except Exception as e:
         print_error(str(e))
+        traceback.print_exc(file=sys.stderr)
         return os.EX_SOFTWARE
 
 
