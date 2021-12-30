@@ -3,4 +3,4 @@ __pycache__/
 
 build/
 dist/
-src/foostitch.egg-info/
+foostitch.egg-info/

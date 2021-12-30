@@ -8,7 +8,7 @@ DIST_DIR = dist
 
 SOURCE_FILES := $(shell find src -type f -name \*.py | sed 's: :\\ :g')
 GENERATED_FILES = \
-	src/$(PKG_NAME).egg-info \
+	$(PKG_NAME).egg-info \
 	$(PKG_NAME)-$(PKG_VERSION).tar.gz \
 	$(PKG_NAME)-$(PKG_VERSION)-py3-none-any.whl
 
@@ -19,7 +19,7 @@ dist : $(SOURCE_FILES)
 	python3 ./setup.py sdist --dist-dir $(DIST_DIR) bdist_wheel --dist-dir $(DIST_DIR) --bdist-dir $(BUILD_DIR)
 
 clean :
-	rm -rf $(BUILD_DIR) $(DIST_DIR) src/$(PKG_NAME).egg-info
+	rm -rf $(BUILD_DIR) $(DIST_DIR) $(PKG_NAME).egg-info
 	find . -name __pycache__ -type d -print0 | xargs -0 rm -rf
 	find . -name \*.pyc -type f -delete
 

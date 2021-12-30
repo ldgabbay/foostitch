@@ -21,7 +21,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name="foostitch",
-    version=find_version("src", "foostitch", "__init__.py"),
+    version=find_version("src", "__init__.py"),
     description="A utility for assembling cloud-init user-data from a repository of templates.",
     long_description=read(HERE, "README.md"),
     long_description_content_type="text/markdown",
@@ -37,11 +37,14 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     packages=["foostitch"],
-    package_dir={"": "src"},
+    package_dir={"foostitch": "src"},
     entry_points={
         "console_scripts": [
             "foostitch = foostitch.__main__:main",
@@ -51,6 +54,7 @@ setup(
     install_requires=[
         "ujson~=1.35",
         "foostache~=1.2",
+        "mkciud~=1.0",
     ],
     python_requires=">=3.6, <4",
 )
