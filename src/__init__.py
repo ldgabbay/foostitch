@@ -8,7 +8,7 @@ from typing import Optional
 
 import foostache
 import mkciud
-import ujson
+import json
 
 
 def apply_context(base: dict, overlay: dict) -> dict:
@@ -83,7 +83,7 @@ class Cookbook(object):
             return
 
         with open(fn, "rb") as f:
-            self.add_cookbook(ujson.decode(f.read()))
+            self.add_cookbook(json.load(f))
 
 
 class Step(object):
